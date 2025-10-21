@@ -2,7 +2,7 @@
   <q-card-section class="q-pa-none">
     <h6 class="q-my-none"><span v-text="$t('server_management')"></span></h6>
     <div class="row">
-      <div class="col-md-6">
+      <div class="col-12 col-md-6">
         <p><span v-text="$t('base_url')"></span></p>
         <q-input
           filled
@@ -16,7 +16,7 @@
       <span v-text="$t('authentication')"></span>
     </h6>
     <div class="row q-col-gutter-sm">
-      <div class="col-12 col-sm-6">
+      <div class="col-12 col-md-6">
         <q-input
           filled
           v-model="formData.auth_token_expire_minutes"
@@ -26,7 +26,7 @@
         >
         </q-input>
       </div>
-      <div class="col-12 col-sm-6">
+      <div class="col-12 col-md-6">
         <q-select
           filled
           v-model="formData.auth_allowed_methods"
@@ -34,6 +34,7 @@
           :hint="$t('auth_allowed_methods_hint')"
           :label="$t('auth_allowed_methods_label')"
           :options="formData.auth_all_methods"
+          :option-label="option => option.length > 25 ? option.substring(0, 22) + '...' : option"
         ></q-select>
       </div>
     </div>
@@ -79,7 +80,7 @@
     <strong class="q-my-none q-mb-sm">Google Auth</strong>
 
     <div class="row">
-      <div class="col-md-6 col-sm-12 q-pr-sm">
+      <div class="col-12 col-md-6 q-pr-sm">
         <q-input
           filled
           v-model="formData.google_client_id"
@@ -88,7 +89,7 @@
         >
         </q-input>
       </div>
-      <div class="col-md-6 col-sm-12">
+      <div class="col-12 col-md-6">
         <q-input
           filled
           v-model="formData.google_client_secret"
@@ -106,7 +107,7 @@
     <strong class="q-my-none q-mb-sm">GitHub Auth</strong>
 
     <div class="row">
-      <div class="col-md-6 col-sm-12 q-pr-sm">
+      <div class="col-12 col-md-6 q-pr-sm">
         <q-input
           filled
           v-model="formData.github_client_id"
@@ -115,7 +116,7 @@
         >
         </q-input>
       </div>
-      <div class="col-md-6 col-sm-12">
+      <div class="col-12 col-md-6">
         <q-input
           filled
           v-model="formData.github_client_secret"
@@ -133,7 +134,7 @@
     <strong class="q-my-none q-mb-sm">Keycloak Auth</strong>
 
     <div class="row q-col-gutter-sm q-col-gutter-y-md">
-      <div class="col-md-4 col-sm-12">
+      <div class="col-12 col-md-4">
         <q-input
           filled
           v-model="formData.keycloak_discovery_url"
@@ -141,7 +142,7 @@
         >
         </q-input>
       </div>
-      <div class="col-md-4 col-sm-12">
+      <div class="col-12 col-md-4">
         <q-input
           filled
           v-model="formData.keycloak_client_id"
@@ -150,7 +151,7 @@
         >
         </q-input>
       </div>
-      <div class="col-md-4 col-sm-12">
+      <div class="col-12 col-md-4">
         <q-input
           filled
           v-model="formData.keycloak_client_secret"
@@ -159,7 +160,7 @@
         >
         </q-input>
       </div>
-      <div class="col-md-4 col-sm-12">
+      <div class="col-12 col-md-4">
         <q-input
           filled
           v-model="formData.keycloak_client_custom_org"
@@ -167,7 +168,7 @@
         >
         </q-input>
       </div>
-      <div class="col-md-8 col-sm-12">
+      <div class="col-12 col-md-8">
         <q-input
           filled
           v-model="formData.keycloak_client_custom_icon"
@@ -213,7 +214,7 @@
         <div class="col-12 col-md-12">
           <p v-text="$t('ip_blocker')"></p>
           <div class="row q-col-gutter-md">
-            <div class="col-6">
+            <div class="col-12 col-md-6">
               <q-input
                 filled
                 v-model="formBlockedIPs"
@@ -243,7 +244,7 @@
               </div>
               <br />
             </div>
-            <div class="col-6">
+            <div class="col-12 col-md-6">
               <q-input
                 filled
                 v-model="formAllowedIPs"
@@ -279,7 +280,7 @@
         <div class="col-12 col-md-12">
           <p v-text="$t('rate_limiter')"></p>
           <div class="row q-col-gutter-md">
-            <div class="col-6">
+            <div class="col-12 col-md-6">
               <q-input
                 filled
                 type="number"
@@ -287,7 +288,7 @@
                 :label="$t('number_of_requests')"
               ></q-input>
             </div>
-            <div class="col-6">
+            <div class="col-12 col-md-6">
               <q-select
                 filled
                 :options="[$t('second'),$t('minute'),$t('hour')]"
