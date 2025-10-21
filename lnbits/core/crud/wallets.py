@@ -104,7 +104,7 @@ async def delete_unused_wallets(
 
 
 async def get_wallet(
-    wallet_id: str, deleted: bool | None = None, conn: Connection | None = None
+    wallet_id: str, deleted: bool | None = False, conn: Connection | None = None
 ) -> Wallet | None:
     query = """
             SELECT *, COALESCE((
@@ -122,7 +122,7 @@ async def get_wallet(
 
 
 async def get_wallets(
-    user_id: str, deleted: bool | None = None, conn: Connection | None = None
+    user_id: str, deleted: bool | None = False, conn: Connection | None = None
 ) -> list[Wallet]:
     query = """
             SELECT *, COALESCE((
@@ -163,11 +163,11 @@ async def get_wallets_paginated(
 
 
 async def get_wallets_ids(
-    user_id: str, deleted: bool | None = None, conn: Connection | None = None
+    user_id: str, deleted: bool | None = False, conn: Connection | None = None
 ) -> list[str]:
     query = """SELECT id FROM wallets  WHERE "user" = :user"""
     if deleted is not None:
-        query += "AND deleted = :deleted"
+        query += " AND deleted = :deleted"
     result: list[dict] = await (conn or db).fetchall(
         query,
         {"user": user_id, "deleted": deleted},
