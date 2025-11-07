@@ -159,6 +159,7 @@
                 color="primary"
                 class="q-mr-md"
                 @click="showParseDialog"
+                :disable="!this.g.wallet.canSendPayments"
                 :label="$t('paste_request')"
               ></q-btn>
               <q-btn
@@ -166,12 +167,14 @@
                 color="primary"
                 class="q-mr-md"
                 @click="showReceiveDialog"
+                :disable="!this.g.wallet.canReceivePayments"
                 :label="$t('create_invoice')"
               ></q-btn>
               <q-btn
                 unelevated
                 color="secondary"
                 icon="qr_code_scanner"
+                :disable="!this.g.wallet.canReceivePayments && !this.g.wallet.canSendPayments"
                 @click="showCamera"
               >
                 <q-tooltip
@@ -361,6 +364,8 @@
                   </q-card>
                 </q-expansion-item>
                 <q-separator></q-separator>
+                {% include "core/_wallet_share.html" %}
+                <q-separator></q-separator>
                 <q-expansion-item
                   group="extras"
                   icon="phone_android"
@@ -509,7 +514,7 @@
                 </q-expansion-item>
                 <q-separator></q-separator>
                 <q-expansion-item
-                  group="charts"
+                  group="extras"
                   icon="insights"
                   :label="$t('wallet_charts')"
                 >

@@ -52,22 +52,33 @@ window.LNbits = {
         0,
         data.wallets.length - data.extra.visible_wallet_count
       )
+      obj.walletInvitesCount = data.extra.wallet_invite_requests?.length || 0
       return obj
     },
     wallet(data) {
       newWallet = {
         id: data.id,
         name: data.name,
+        walletType: data.wallet_type,
+        sharePermissions: data.share_permissions,
+        sharedWalletId: data.shared_wallet_id,
         adminkey: data.adminkey,
         inkey: data.inkey,
         currency: data.currency,
-        extra: data.extra
+        extra: data.extra,
+        canReceivePayments: true,
+        canSendPayments: true
       }
       newWallet.msat = data.balance_msat
       newWallet.sat = Math.floor(data.balance_msat / 1000)
       newWallet.fsat = new Intl.NumberFormat(window.LOCALE).format(
         newWallet.sat
       )
+      if (newWallet.walletType === 'lightning-shared') {
+        const perms = newWallet.sharePermissions
+        newWallet.canReceivePayments = perms.includes('receive-payments')
+        newWallet.canSendPayments = perms.includes('send-payments')
+      }
       newWallet.url = `/wallet?&wal=${data.id}`
       return newWallet
     },
