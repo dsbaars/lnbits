@@ -149,6 +149,8 @@ window.localisation.en = {
   extensions: 'Extensions',
   no_extensions: "You don't have any extensions installed :(",
   created: 'Created',
+  created_at: 'Created At',
+  updated_at: 'Updated At',
   search_extensions: 'Search extensions',
   search_wallets: 'Search wallets',
   extension_sources: 'Extension Sources',
@@ -159,6 +161,7 @@ window.localisation.en = {
   repository: 'Repository',
   confirm_continue: 'Are you sure you want to continue?',
   manage_extension_details: 'Install/uninstall extension',
+  upload: 'Upload',
   install: 'Install',
   uninstall: 'Uninstall',
   drop_db: 'Remove Data',
@@ -407,6 +410,8 @@ window.localisation.en = {
   first_name: 'First Name',
   last_name: 'Last Name',
   picture: 'Picture',
+  user_picture_desc:
+    'URL to an image to use as profile picture. You can upload it as an asset.',
   verify_email: 'Verify email with',
   account: 'Account',
   update_account: 'Update Account',
@@ -431,6 +436,26 @@ window.localisation.en = {
   toggle_gradient: 'Toggle Gradient',
   gradient_background: 'Gradient Background',
   language: 'Language',
+  assets: 'Assets',
+  max_asset_size_mb: 'Max Asset Size (MB)',
+  max_asset_size_mb_desc:
+    'The maximum allowed size for asset uploads in megabytes (can use decimal values).',
+  assets_allowed_mime_types: 'Allowed MIME Types',
+  assets_allowed_mime_types_desc:
+    'The MIME types that are allowed for asset uploads. No value means all uploads are allowed.',
+  thumbnail_width: 'Thumbnail Width',
+  thumbnail_width_desc: 'Width of the generated thumbnail in pixels.',
+  thumbnail_height: 'Thumbnail Height',
+  thumbnail_height_desc: 'Height of the generated thumbnail in pixels.',
+  thumbnail_format: 'Thumbnail Format',
+  thumbnail_format_desc:
+    'Image format of the generated thumbnail (PNG, JPEG, etc.).',
+  max_assets_per_user: 'Max Assets Per User',
+  max_assets_per_user_desc:
+    'The maximum number of assets a user can upload. Zero means upload forbidden.',
+  assets_no_limit_users: 'Users Without Asset Limits',
+  assets_no_limit_users_desc:
+    'These users can upload an unlimited number of assets (user id based).',
   color_scheme: 'Color Scheme',
   visible_wallet_count: 'Visible Wallet Count',
   admin_settings: 'Admin Settings',

@@ -759,3 +759,22 @@ async def m036_add_shared_wallet_column(db: Connection):
         ALTER TABLE wallets ADD COLUMN shared_wallet_id TEXT
         """
     )
+
+
+async def m037_create_assets_table(db: Connection):
+    await db.execute(
+        f"""
+        CREATE TABLE IF NOT EXISTS assets (
+            id TEXT PRIMARY KEY,
+            user_id TEXT NOT NULL,
+            mime_type TEXT NOT NULL,
+            is_public BOOLEAN NOT NULL DEFAULT false,
+            name TEXT NOT NULL,
+            size_bytes INT NOT NULL,
+            thumbnail_base64 TEXT,
+            thumbnail {db.blob},
+            data {db.blob} NOT NULL,
+            created_at TIMESTAMP NOT NULL DEFAULT {db.timestamp_now}
+        );
+        """
+    )

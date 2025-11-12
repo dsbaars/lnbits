@@ -82,10 +82,46 @@ window.PageAccount = {
         allRead: false,
         allWrite: false
       },
+      assets: [],
+      assetsTable: {
+        loading: false,
+        columns: [
+          {
+            name: 'name',
+            align: 'left',
+            label: this.$t('Name'),
+            field: 'name',
+            sortable: true
+          },
+          {
+            name: 'created_at',
+            align: 'left',
+            label: this.$t('created_at'),
+            field: 'created_at',
+            sortable: true
+          }
+        ],
+        pagination: {
+          rowsPerPage: 6,
+          page: 1
+        }
+      },
+      assetsUploadToPublic: false,
       notifications: {
         nostr: {
           identifier: ''
         }
+      }
+    }
+  },
+  watch: {
+    'assetsTable.search': {
+      handler() {
+        const props = {}
+        if (this.assetsTable.search) {
+          props['search'] = this.assetsTable.search
+        }
+        this.getUserAssets()
       }
     }
   },
@@ -400,6 +436,94 @@ window.PageAccount = {
       } finally {
         this.apiAcl.password = ''
       }
+    },
+    async getUserAssets(props) {
+      try {
+        this.assetsTable.loading = true
+        const params = LNbits.utils.prepareFilterQuery(this.assetsTable, props)
+        const {data} = await LNbits.api.request(
+          'GET',
+          `/api/v1/assets/paginated?${params}`,
+          null
+        )
+        this.assets = data.data
+        this.assetsTable.pagination.rowsNumber = data.total
+      } catch (e) {
+        LNbits.utils.notifyApiError(e)
+      } finally {
+        this.assetsTable.loading = false
+      }
+    },
+    onImageInput(e) {
+      const file = e.target.files[0]
+      if (file) {
+        this.uploadAsset(file)
+      }
+    },
+    async uploadAsset(file) {
+      const formData = new FormData()
+      formData.append('file', file)
+      try {
+        await LNbits.api.request(
+          'POST',
+          `/api/v1/assets?public_asset=${this.assetsUploadToPublic}`,
+          null,
+          formData,
+          {
+            headers: {'Content-Type': 'multipart/form-data'}
+          }
+        )
+        this.$q.notify({
+          type: 'positive',
+          message: 'Upload successful!',
+          icon: null
+        })
+        await this.getUserAssets()
+      } catch (e) {
+        console.warn(e)
+        LNbits.utils.notifyApiError(e)
+      }
+    },
+    async deleteAsset(asset) {
+      LNbits.utils
+        .confirmDialog('Are you sure you want to delete this asset?')
+        .onOk(async () => {
+          try {
+            await LNbits.api.request(
+              'DELETE',
+              `/api/v1/assets/${asset.id}`,
+              null
+            )
+            this.$q.notify({
+              type: 'positive',
+              message: 'Asset deleted.'
+            })
+            await this.getUserAssets()
+          } catch (e) {
+            console.warn(e)
+            LNbits.utils.notifyApiError(e)
+          }
+        })
+    },
+    async toggleAssetPublicAccess(asset) {
+      try {
+        await LNbits.api.request('PUT', `/api/v1/assets/${asset.id}`, null, {
+          is_public: !asset.is_public
+        })
+        this.$q.notify({
+          type: 'positive',
+          message: 'Update successful!',
+          icon: null
+        })
+        await this.getUserAssets()
+      } catch (e) {
+        console.warn(e)
+        LNbits.utils.notifyApiError(e)
+      }
+    },
+    copyAssetLinkToClipboard(asset) {
+      const assetUrl = `${window.location.origin}/api/v1/assets/${asset.id}/binary`
+      this.copyText(assetUrl)
     }
   },
 
@@ -417,5 +541,6 @@ window.PageAccount = {
       this.tab = hash
     }
     await this.getApiACLs()
+    await this.getUserAssets()
   }
 }

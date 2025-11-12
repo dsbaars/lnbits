@@ -62,6 +62,16 @@
                   ><span v-text="$t('access_control_list')"></span
                 ></q-tooltip>
               </q-tab>
+              <q-tab
+                name="assets"
+                icon="perm_media"
+                :label="$q.screen.gt.sm ? $t('assets') : ''"
+                @update="val => (tab = val.name)"
+              >
+                <q-tooltip v-if="!$q.screen.gt.sm"
+                  ><span v-text="$t('assets')"></span
+                ></q-tooltip>
+              </q-tab>
             </q-tabs>
           </template>
           <template v-slot:after>
@@ -322,6 +332,7 @@
                       <q-input
                         v-model="user.extra.picture"
                         :label="$t('picture')"
+                        :hint="$t('user_picture_desc')"
                         filled
                         dense
                         class="q-mb-md"
@@ -949,6 +960,178 @@
                         </q-btn>
                       </div>
                     </div>
+                  </q-card-section>
+                </q-tab-panel>
+                <q-tab-panel name="assets">
+                  <q-card-section>
+                    <div class="row">
+                      <div class="col-md-2 col-sm-12">
+                        <q-btn
+                          color="primary"
+                          :label="$t('upload')"
+                          @click="$refs.imageInput.click()"
+                          class="full-width"
+                        ></q-btn>
+                        <input
+                          type="file"
+                          ref="imageInput"
+                          style="display: none"
+                          @change="onImageInput"
+                        />
+                      </div>
+                      <div class="col-md-4 col-sm-12">
+                        <q-toggle
+                          v-model="assetsUploadToPublic"
+                          label="Visible for everyone (public)"
+                        ></q-toggle>
+                      </div>
+                      <div class="col-md-6 col-sm-12">
+                        <q-input
+                          :label="$t('search')"
+                          dense
+                          class="full-width q-pb-xl"
+                          v-model="assetsTable.search"
+                        >
+                          <template v-slot:before>
+                            <q-icon name="search"> </q-icon>
+                          </template>
+                          <template v-slot:append>
+                            <q-icon
+                              v-if="assetsTable.search !== ''"
+                              name="close"
+                              @click="assetsTable.search = ''"
+                              class="cursor-pointer"
+                            >
+                            </q-icon>
+                          </template>
+                        </q-input>
+                      </div>
+                    </div>
+                  </q-card-section>
+                  <q-separator></q-separator>
+                  <q-card-section>
+                    <q-table
+                      grid
+                      grid-header
+                      flat
+                      bordered
+                      :rows="assets"
+                      :columns="assetsTable.columns"
+                      v-model:pagination="assetsTable.pagination"
+                      :loading="assetsTable.loading"
+                      @request="getUserAssets"
+                      row-key="id"
+                      :filter="filter"
+                      hide-header
+                    >
+                      <template v-slot:item="props">
+                        <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4">
+                          <q-card class="q-ma-sm wallet-list-card text-center">
+                            <q-card-section>
+                              <a
+                                v-if="props.row.thumbnail_base64"
+                                target="_blank"
+                                style="color: inherit"
+                                :href="`/api/v1/assets/${props.row.id}/binary`"
+                              >
+                                <q-img
+                                  :src="
+                                    'data:image/png;base64,' +
+                                    props.row.thumbnail_base64
+                                  "
+                                  :alt="props.row.name"
+                                  loading="lazy"
+                                  style="height: 128px"
+                                  class="text-center cursor-pointer"
+                                >
+                                </q-img>
+                              </a>
+                              <q-icon v-else name="web_asset"></q-icon>
+                            </q-card-section>
+                            <q-separator></q-separator>
+
+                            <q-card-section>
+                              <q-btn-dropdown
+                                color="grey"
+                                dense
+                                outline
+                                no-caps
+                                :label="props.row.name"
+                                :icon="props.row.is_public ? 'public' : ''"
+                              >
+                                <q-list>
+                                  <q-item
+                                    clickable
+                                    v-close-popup
+                                    @click="copyAssetLinkToClipboard(props.row)"
+                                  >
+                                    <q-item-section avatar>
+                                      <q-avatar icon="content_copy" />
+                                    </q-item-section>
+                                    <q-item-section>
+                                      <q-item-label>Copy Link</q-item-label>
+                                      <q-item-label caption
+                                        >Copy asset link to
+                                        clipboard</q-item-label
+                                      >
+                                    </q-item-section>
+                                  </q-item>
+
+                                  <q-item
+                                    clickable
+                                    v-close-popup
+                                    @click="toggleAssetPublicAccess(props.row)"
+                                  >
+                                    <q-item-section avatar>
+                                      <q-avatar
+                                        :icon="
+                                          props.row.is_public
+                                            ? 'public_off'
+                                            : 'public'
+                                        "
+                                        text-color="primary"
+                                      />
+                                    </q-item-section>
+                                    <q-item-section v-if="props.row.is_public">
+                                      <q-item-label>Unpublish</q-item-label>
+                                      <q-item-label caption
+                                        >Make this asset private</q-item-label
+                                      >
+                                    </q-item-section>
+                                    <q-item-section v-else>
+                                      <q-item-label>Publish</q-item-label>
+                                      <q-item-label caption
+                                        >Make this asset public</q-item-label
+                                      >
+                                    </q-item-section>
+                                  </q-item>
+
+                                  <q-item
+                                    clickable
+                                    v-close-popup
+                                    @click="deleteAsset(props.row)"
+                                  >
+                                    <q-item-section avatar>
+                                      <q-avatar
+                                        icon="delete"
+                                        text-color="negative"
+                                      />
+                                    </q-item-section>
+                                    <q-item-section>
+                                      <q-item-label>Delete</q-item-label>
+                                      <q-item-label caption
+                                        >Permanently delete this
+                                        asset</q-item-label
+                                      >
+                                    </q-item-section>
+                                  </q-item>
+                                </q-list>
+                              </q-btn-dropdown>
+                            </q-card-section>
+                          </q-card>
+                        </div>
+                      </template>
+                    </q-table>
                   </q-card-section>
                 </q-tab-panel>
               </q-tab-panels>
