@@ -6,7 +6,7 @@
           <div class="row items-center justify-between q-gutter-xs">
             <div class="col">
               <q-btn
-                @click="showNewWalletDialog()"
+                @click="openNewWalletDialog()"
                 :label="$t('add_wallet')"
                 color="primary"
               >
@@ -123,12 +123,4 @@
       </div>
     </div>
   </div>
-
-  <q-dialog
-    v-model="addWalletDialog.show"
-    persistent
-    @hide="addWalletDialog = {show: false}"
-  >
-    <lnbits-new-user-wallet></lnbits-new-user-wallet>
-  </q-dialog>
 </template>

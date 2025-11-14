@@ -1,6 +1,6 @@
-<template id="lnbits-wallet-list">
+<template id="lnbits-manage-wallet-list">
   <q-list
-    v-if="g.user && g.user.wallets.length"
+    v-if="g.user && g.user.wallets.length && !g.walletFlip"
     dense
     class="lnbits-drawer__q-list"
   >
@@ -67,7 +67,14 @@
         ></q-item-label>
       </q-item-section>
     </q-item>
-    <q-item clickable @click="createWallet()">
+    <q-item
+      clickable
+      @click="
+        g.user.walletInvitesCount
+          ? openNewWalletDialog('lightning-shared')
+          : openNewWalletDialog('lightning')
+      "
+    >
       <q-item-section side>
         <q-icon name="add" color="grey-5" size="md"></q-icon>
       </q-item-section>

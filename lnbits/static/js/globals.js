@@ -18,6 +18,8 @@ window.g = Vue.reactive({
   wallets: [],
   payments: [],
   walletEventListeners: [],
+  showNewWalletDialog: false,
+  newWalletType: 'lightning',
   updatePayments: false,
   updatePaymentsHash: '',
   mobileSimple: localStore('lnbits.mobileSimple', true),

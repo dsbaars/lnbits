@@ -6,7 +6,6 @@ window.windowMixin = {
       utils: window._lnbitsUtils,
       g: window.g,
       toggleSubs: true,
-      addWalletDialog: {show: false, walletType: 'lightning'},
       isSatsDenomination: WINDOW_SETTINGS['LNBITS_DENOMINATION'] == 'sats',
       allowedThemes: WINDOW_SETTINGS['LNBITS_THEME_OPTIONS'],
       walletEventListeners: [],
@@ -15,6 +14,10 @@ window.windowMixin = {
   },
 
   methods: {
+    openNewWalletDialog(walletType = 'lightning') {
+      this.g.newWalletType = walletType
+      this.g.showNewWalletDialog = true
+    },
     flipWallets(smallScreen) {
       this.g.walletFlip = !this.g.walletFlip
       if (this.g.walletFlip && smallScreen) {
@@ -26,14 +29,6 @@ window.windowMixin = {
       this.$router.push({
         path: '/wallets'
       })
-    },
-    handleWalletAction(payload) {
-      if (payload.action === 'create-wallet') {
-        this.showAddNewWalletDialog()
-      }
-    },
-    showAddNewWalletDialog() {
-      this.addWalletDialog = {show: true, walletType: 'lightning'}
     },
     paymentEvents() {
       this.g.walletEventListeners = this.g.walletEventListeners || []
