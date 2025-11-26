@@ -22,7 +22,8 @@ window.g = Vue.reactive({
   walletEventListeners: [],
   showNewWalletDialog: false,
   newWalletType: 'lightning',
-  updatePayments: false,
+  updatePayments: false, // used for updating the lnbits-payment-list
+  updatePaymentsHash: false, // used for closing the receive dialog
   currencies: WINDOW_SETTINGS.LNBITS_CURRENCIES ?? [],
   allowedCurrencies: WINDOW_SETTINGS.LNBITS_ALLOWED_CURRENCIES ?? [],
   locale: localStore('lnbits.lang', navigator.languages[1] ?? 'en'),
