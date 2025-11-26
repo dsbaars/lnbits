@@ -86,6 +86,12 @@ window.i18n = new VueI18n.createI18n({
 })
 
 window.app.mixin({
+  data() {
+    return {
+      g: window.g,
+      ...WINDOW_SETTINGS
+    }
+  },
   computed: {
     isVueRoute() {
       const currentPath = window.location.pathname
