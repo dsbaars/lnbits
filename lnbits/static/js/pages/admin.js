@@ -15,12 +15,21 @@ window.PageAdmin = {
       needsRestart: false
     }
   },
-  async created() {
-    await this.getSettings()
-    const hash = window.location.hash.replace('#', '')
-    if (hash) {
-      this.tab = hash
+  watch: {
+    tab(tab) {
+      this.$router.push(`/admin#${tab}`)
+    },
+    $route(to) {
+      if (to.hash.length > 1) {
+        this.tab = to.hash.replace('#', '')
+      } else {
+        this.$router.push(`/admin#funding`)
+      }
     }
+  },
+  async created() {
+    this.tab = this.$route.hash.replace('#', '')
+    await this.getSettings()
   },
   computed: {
     checkChanges() {
