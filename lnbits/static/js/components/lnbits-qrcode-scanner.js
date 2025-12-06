@@ -1,25 +1,44 @@
 window.app.component('lnbits-qrcode-scanner', {
   template: '#lnbits-qrcode-scanner',
-  mixins: [window.windowMixin],
+  props: ['callback'],
+  data() {
+    return {
+      showScanner: false
+    }
+  },
   watch: {
-    'g.showScanner'(newVal) {
-      if (newVal === true) {
-        if (this.g.hasCamera === false) {
-          Quasar.Notify.create({
-            message: 'No camera found on this device.',
-            type: 'negative'
-          })
-          this.g.showScanner = false
-        }
+    callback(newVal) {
+      if (newVal === null) {
+        return this.reset()
       }
+      if (typeof newVal !== 'function') {
+        Quasar.Notify.create({
+          message: 'QR code scanner callback is not a function.',
+          type: 'negative'
+        })
+        return this.reset()
+      }
+      if (this.g.hasCamera === false) {
+        Quasar.Notify.create({
+          message: 'No camera found on this device.',
+          type: 'negative'
+        })
+        return this.reset()
+      }
+      this.showScanner = true
     }
   },
   methods: {
+    reset() {
+      this.showScanner = false
+      this.g.scanner = null
+    },
     detect(val) {
       const rawValue = val[0].rawValue
       console.log('Detected QR code value:', rawValue)
+      this.callback(rawValue)
       this.$emit('detect', rawValue)
-      this.g.showScanner = false
+      this.reset()
     },
     async onInitQR(promise) {
       try {
@@ -48,7 +67,7 @@ window.app.component('lnbits-qrcode-scanner', {
           type: 'negative'
         })
         this.g.hasCamera = false
-        this.showScanner = false
+        this.reset()
       }
     }
   }
