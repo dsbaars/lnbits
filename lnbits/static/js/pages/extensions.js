@@ -8,7 +8,7 @@ window.PageExtensions = {
       fullscreen: false,
       autoplay: true,
       searchTerm: '',
-      tab: 'all',
+      tab: 'installed',
       manageExtensionTab: 'releases',
       filteredExtensions: [],
       updatableExtensions: [],
@@ -636,6 +636,10 @@ window.PageExtensions = {
   async created() {
     this.extensions = await this.fetchAllExtensions()
     this.extbuilderEnabled = this.g.user.admin || this.LNBITS_EXT_BUILDER
+
+    if (this.g.user.extensions.length === 0) {
+      this.tab = 'all'
+    }
 
     const extId = window.location.hash.replace('#', '')
     const ext = this.extensions.find(ext => ext.id === extId)
