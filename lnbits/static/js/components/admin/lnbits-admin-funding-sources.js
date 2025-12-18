@@ -89,8 +89,14 @@ window.app.component('lnbits-admin-funding-sources', {
             lnd_rest_cert: 'Certificate',
             lnd_rest_macaroon: 'Macaroon',
             lnd_rest_macaroon_encrypted: 'Encrypted Macaroon',
-            lnd_rest_route_hints: 'Enable Route Hints',
-            lnd_rest_allow_self_payment: 'Allow Self Payment'
+            lnd_rest_route_hints: {
+              advanced: true,
+              label: 'Enable Route Hints'
+            },
+            lnd_rest_allow_self_payment: {
+              advanced: true,
+              label: 'Allow Self Payment'
+            }
           }
         ],
         [
@@ -160,14 +166,27 @@ window.app.component('lnbits-admin-funding-sources', {
           'BoltzWallet',
           'Boltz',
           {
-            boltz_client_endpoint: 'Endpoint',
-            boltz_client_macaroon: 'Admin Macaroon path or hex',
-            boltz_client_cert: 'Certificate path or hex',
-            boltz_client_password: 'Wallet Password (can be empty)',
+            boltz_client_endpoint: {
+              label: 'Boltz client endpoint',
+              value: '127.0.0.1:9002'
+            },
+            boltz_client_macaroon: {
+              label: 'Admin Macaroon path or hex',
+              value: '/home/ubuntu/.boltz/macaroons/admin.macaroon'
+            },
+            boltz_client_cert: {
+              label: 'Certificate path or hex',
+              value: '/home/ubuntu/.boltz/tls.cert'
+            },
             boltz_mnemonic: {
-              label: 'Liquid mnemonic (copy into greenwallet)',
+              label: 'Liquid seed phrase',
+              hint: 'Boltz will fetch once connected, but you can change later (can be opened in a liquid wallet) ',
               copy: true,
               qrcode: true
+            },
+            boltz_client_password: {
+              label: 'Wallet Password (optional)',
+              advanced: true
             }
           }
         ],
