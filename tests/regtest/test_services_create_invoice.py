@@ -7,6 +7,8 @@ from lnbits.core.services import (
 from lnbits.wallets import get_funding_source
 from lnbits.wallets.base import PaymentStatus
 
+from .helpers import is_boltz_wallet
+
 description = "test create invoice"
 
 
@@ -17,7 +19,10 @@ async def test_create_invoice(from_wallet):
         amount=1000,
         memo=description,
     )
-    assert payment.preimage
+
+    # we cannot know the preimage of the swap yet
+    if not is_boltz_wallet:
+        assert payment.preimage
 
     invoice = decode(payment.bolt11)
     assert invoice.payment_hash == payment.payment_hash
@@ -35,7 +40,10 @@ async def test_create_internal_invoice(from_wallet):
     payment = await create_invoice(
         wallet_id=from_wallet.id, amount=1000, memo=description, internal=True
     )
-    assert payment.preimage
+
+    # we cannot know the preimage of the swap yet
+    if not is_boltz_wallet:
+        assert payment.preimage
 
     invoice = decode(payment.bolt11)
     assert invoice.payment_hash == payment.payment_hash

@@ -6,6 +6,11 @@ from subprocess import PIPE, Popen, TimeoutExpired
 
 from loguru import logger
 
+from lnbits.wallets import get_funding_source
+
+funding_source = get_funding_source()
+is_boltz_wallet = funding_source.__class__.__name__ == "BoltzWallet"
+
 docker_lightning_cli = [
     "docker",
     "exec",
@@ -24,6 +29,16 @@ docker_bitcoin_cli = [
     "-rpcuser=lnbits",
     "-rpcpassword=lnbits",
     "-regtest",
+]
+
+
+docker_elements_cli = [
+    "docker",
+    "exec",
+    "lnbits-elementsd-1",
+    "elements-cli",
+    "-rpcport=18884",
+    "-chain=liquidregtest",
 ]
 
 
@@ -50,7 +65,7 @@ docker_lightning_noroute_cli = [
 
 
 def run_cmd(cmd: list) -> str:
-    timeout = 10
+    timeout = 30
     process = Popen(cmd, stdout=PIPE, stderr=PIPE)
 
     logger.debug(f"running command: {cmd}")
@@ -124,6 +139,12 @@ def pay_real_invoice(invoice: str) -> str:
 
 def mine_blocks(blocks: int = 1) -> str:
     cmd = docker_bitcoin_cli.copy()
+    cmd.extend(["-generate", str(blocks)])
+    return run_cmd(cmd)
+
+
+def mine_blocks_liquid(blocks: int = 1) -> str:
+    cmd = docker_elements_cli.copy()
     cmd.extend(["-generate", str(blocks)])
     return run_cmd(cmd)
 

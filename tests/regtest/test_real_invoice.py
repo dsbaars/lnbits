@@ -18,6 +18,7 @@ from ..helpers import FakeError, is_fake, is_regtest
 from .helpers import (
     cancel_invoice,
     get_real_invoice,
+    mine_blocks_liquid,
     pay_real_invoice,
     settle_invoice,
 )
@@ -66,7 +67,7 @@ async def test_pay_real_invoice(
 
     await asyncio.sleep(1)
     balance = await get_node_balance_sats()
-    assert prev_balance - balance == 100
+    assert prev_balance - balance == 100 + abs(payment.fee // 1000)
 
 
 @pytest.mark.anyio
@@ -153,7 +154,8 @@ async def test_create_real_invoice(client, adminkey_headers_from, inkey_headers_
 
     async def on_paid(payment: Payment):
 
-        assert payment.checking_id == invoice["payment_hash"]
+        assert payment.payment_hash == invoice["payment_hash"]
+        assert payment.checking_id == invoice["checking_id"]
 
         response = await client.get(
             f'/api/v1/payments/{invoice["payment_hash"]}', headers=inkey_headers_from
@@ -164,7 +166,8 @@ async def test_create_real_invoice(client, adminkey_headers_from, inkey_headers_
 
         await asyncio.sleep(1)
         balance = await get_node_balance_sats()
-        assert balance - prev_balance == create_invoice.amount
+        fee = abs(payment_status.get("details", {}).get("fee", 0) // 1000)
+        assert balance - prev_balance == create_invoice.amount - fee
 
         assert payment_status.get("preimage") is not None
 
@@ -200,6 +203,8 @@ async def test_pay_real_invoice_set_pending_and_check_state(
     assert len(invoice["payment_hash"]) == 64
     assert len(invoice["checking_id"]) > 0
 
+    mine_blocks_liquid(1)
+    await asyncio.sleep(1)
     # check the payment status
     response = await client.get(
         f'/api/v1/payments/{invoice["payment_hash"]}', headers=inkey_headers_from
@@ -341,6 +346,7 @@ async def test_pay_hold_invoice_check_pending_and_fail_cancel_payment_task_in_me
     assert preimage_hash == invoice_obj.payment_hash
     cancel_invoice(preimage_hash)
 
+    mine_blocks_liquid(1)
     # check if paid
     await asyncio.sleep(1)
 
@@ -382,7 +388,9 @@ async def test_receive_real_invoice_set_pending_and_check_state(
     assert not payment_status["paid"]
 
     async def on_paid(payment: Payment):
-        assert payment.checking_id == invoice["payment_hash"]
+
+        assert payment.payment_hash == invoice["payment_hash"]
+        assert payment.checking_id == invoice["checking_id"]
 
         response = await client.get(
             f'/api/v1/payments/{invoice["payment_hash"]}', headers=inkey_headers_from
