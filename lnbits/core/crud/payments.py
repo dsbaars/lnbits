@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from time import time
 from typing import Any
 
@@ -304,8 +305,16 @@ async def update_payment_checking_id(
     checking_id: str, new_checking_id: str, conn: Connection | None = None
 ) -> None:
     await (conn or db).execute(
-        "UPDATE apipayments SET checking_id = :new_id WHERE checking_id = :old_id",
-        {"new_id": new_checking_id, "old_id": checking_id},
+        f"""
+            UPDATE apipayments
+            SET checking_id = :new_id, updated_at = {db.timestamp_placeholder('now')}
+            WHERE checking_id = :old_id
+        """,  # noqa: S608
+        {
+            "new_id": new_checking_id,
+            "old_id": checking_id,
+            "now": int(time()),
+        },
     )
 
 
@@ -314,6 +323,7 @@ async def update_payment(
     new_checking_id: str | None = None,
     conn: Connection | None = None,
 ) -> None:
+    payment.updated_at = datetime.now(timezone.utc)
     await (conn or db).update(
         "apipayments", payment, "WHERE checking_id = :checking_id"
     )
